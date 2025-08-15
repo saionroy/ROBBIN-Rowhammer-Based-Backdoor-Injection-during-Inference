@@ -32,6 +32,16 @@ python --version
 # Install required packages
 pip install torch>=1.9.0 torchvision numpy matplotlib
 
+# Clone the repository
+git clone https://github.com/yourusername/ROBIN.git
+cd ROBIN
+
+# Install dependencies
+pip install -r requirements.txt
+python main_8bit_mvm.py
+```
+
+## Repository Structure
 ROBIN/
 ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
 ├── main_8bit_mvm.py                     # Main execution script for INT8 models
