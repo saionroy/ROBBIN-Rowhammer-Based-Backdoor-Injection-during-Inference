@@ -42,6 +42,7 @@ python main_8bit_mvm.py
 ```
 
 ## Repository Structure
+```
 ROBIN/
 ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
 ├── main_8bit_mvm.py                     # Main execution script for INT8 models
@@ -56,3 +57,4 @@ ROBIN/
 ├── AttackResults/                       # Output directory for results
 ├── requirements.txt                     # Python dependencies
 └── README.md                           # This file
+```
