@@ -1,4 +1,4 @@
-# ROBIN: ROwhammer-aware Backdoor Attack during INference
+# ROBIN: Rowhammer-aware Backdoor Attack during Inference
 
 A hardware-aware inference-time backdoor attack framework that exploits Rowhammer vulnerabilities to inject backdoors into deployed Deep Neural Networks (DNNs) without modifying the model files.
 
