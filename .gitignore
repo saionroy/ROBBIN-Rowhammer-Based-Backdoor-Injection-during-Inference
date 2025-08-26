@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch
+*.pth
+*.pt
+
+# Hardware attack binaries
+hardware_attack/targeted_map
+hardware_attack/rowhammer_attack
+hardware_attack/backdoor_test
+hardware_attack/run_attack
+hardware_attack/*.o
+
+# Generated files
+hardware_attack/targeted_mapping_results.txt
+hardware_attack/target_pages_summary.txt
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output directories
+AttackResults/
+ProfilingData/
+experiments/
+logs/
+results/
+
+# Large binary files (model checkpoints)
+*.bin
+*.tar
+*.npy
+
+# Temporary files
+tmp/
+temp/
