@@ -56,6 +56,7 @@ For custom hardware attacks, profile your DRAM using the included Blacksmith too
 - Generate vulnerability matrix for your specific hardware
 - Required for reliable hardware attack execution
 
+
 ## 🚀 Quick Start
 
 ### 1. Software Simulation
@@ -87,6 +88,7 @@ python analyze_memory_layout.py --model your_model.pth --output model_pagemap.tx
 ```
 
 ### Custom DRAM Profiling
+**Sample profiling results** can be found [here](https://drive.google.com/drive/folders/113tWaQPlbuyK6h5fFslvnyCXRkXAqYg8?usp=sharing), which can be used for generating the matrix with different devices.
 ```bash
 # Generate bitflip matrix from your DRAM profiling data
 python create_bitflip_matrix.py --profile your_profile.json --output custom_bitflips.npy
@@ -95,38 +97,53 @@ python create_bitflip_matrix.py --profile your_profile.json --output custom_bitf
 ## 📁 Repository Structure
 ```bash
 ROBIN-Rowhammer-aware-Backdoor-Attack/
-├── 📊 Software Simulation & Analysis
-│   ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
+├── Core Attack Scripts
 │   ├── main_8bit_mvm.py                     # Main execution script for INT8 models
+│   ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
 │   ├── analyze_memory_layout.py             # Model memory layout analysis
 │   ├── create_bitflip_matrix.py             # DRAM bitflip matrix generation
 │   ├── device1_1G.npy.zip                  # Sample bitflip matrix for simulation
 │   ├── utils.py                             # Utility functions
-│   ├── utils_sdn.py                         # SDN-specific utilities
-│   ├── models/                              # DNN model definitions
-│   │   ├── quan_resnet_cifar.py            # Quantized ResNet models
-│   │   └── quantization.py                 # Quantization utilities
-│   ├── networks/                            # Network architectures
+│   └── utils_sdn.py                         # SDN-specific utilities
+│
+├── Model Definitions
+│   ├── models/                              # DNN model implementations
+│   │   ├── quan_resnet_cifar.py            # Quantized ResNet for CIFAR
+│   │   ├── quan_resnet_imagenet.py         # Quantized ResNet for ImageNet
+│   │   ├── quan_vgg_cifar.py               # Quantized VGG models
+│   │   ├── quan_mobilenet_imagenet.py      # Quantized MobileNet
+│   │   ├── quantization.py                 # Quantization utilities
+│   │   ├── binarization.py                 # Binary neural networks
+│   │   └── vanilla_models/                 # Standard model implementations
+│   └── networks/                            # Network architectures
+│       ├── CNNs/                           # Standard CNN architectures
+│       │   ├── ResNet.py
+│       │   ├── VGG.py
+│       │   └── MobileNet.py
+│       └── SDNs/                           # Self-Destructing Networks
+│           ├── ResNet_SDN.py
+│           ├── VGG_SDN.py
+│           └── MobileNet_SDN.py
+│
+├── Hardware Attack Implementation
+│   ├── hardware_attack/
+│   │   ├── targeted_map.c                   # Memory mapping for DNN→DRAM pages
+│   │   ├── rowhammer_attack.cpp             # RowHammer pattern execution
+│   │   ├── backdoor_test.cpp                # Backdoor effectiveness verification
+│   │   ├── run_attack.cpp                   # Complete attack orchestration
+│   │   ├── resnet20_quan.h                  # ResNet20 model header
+│   │   ├── resnet20_quan.cpp                # ResNet20 model implementation
+│   │   ├── resnet20_int8_device1/          # Attack results and triggers
+│   │   │   ├── attack_report_int8.txt      # Vulnerable page mappings
+│   │   │   ├── trigger_pattern.npy         # Backdoor trigger pattern
+│   │   │   ├── trigger_pattern.png         # Trigger visualization
+│   │   │   ├── trigger_pattern.pth         # PyTorch trigger format
+│   │   │   ├── attack_config.json          # Attack configuration
+│   │   │   └── mvm_attack_visualization.png # Attack visualization
+│   │   └── Makefile                         # Build configuration
 │   └── blacksmith/                          # DRAM vulnerability profiling tool
 │
-├── ⚡ Hardware Attack Implementation
-│   └── hardware_attack/
-│       ├── targeted_map.c                   # Memory mapping for DNN→DRAM pages
-│       ├── rowhammer_attack.cpp             # RowHammer pattern execution
-│       ├── backdoor_test.cpp                # Backdoor effectiveness verification
-│       ├── run_attack.cpp                   # Complete attack orchestration
-│       ├── resnet20_quan.h                  # ResNet20 model header
-│       ├── resnet20_quan.cpp                # ResNet20 model implementation
-│       ├── patterns.json                    # RowHammer patterns with UUID IDs
-│       ├── ResNet20_FL32.bin               # Target model binary
-│       ├── device2_1G_metadata.json        # DRAM topology metadata
-│       ├── resnet20_int8_device1/          # Attack data and triggers
-│       │   ├── attack_report_int8.txt      # Vulnerable page mappings
-│       │   ├── trigger_pattern.npy         # Backdoor trigger pattern
-│       │   └── attack_config.json          # Attack configuration
-│       └── Makefile                         # Build configuration
-│
-└── 📄 Documentation
+└── Documentation
     └── README.md                            # This file
 ```
 

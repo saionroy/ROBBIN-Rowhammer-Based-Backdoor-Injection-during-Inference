@@ -1,13 +1,8 @@
-# Blacksmith Rowhammer Fuzzer
+# Blacksmith DRAM Profiling Tool
 
-[![Academic Code](https://img.shields.io/badge/Origin-Academic%20Code-C1ACA0.svg?style=flat)]() [![Language Badge](https://img.shields.io/badge/Made%20with-C/C++-blue.svg)](https://isocpp.org/std/the-standard) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![contributions welcome](https://img.shields.io/badge/Contributions-welcome-lightgray.svg?style=flat)]()
+This tool is adapted from the original [Blacksmith Rowhammer Fuzzer](https://github.com/comsec-group/blacksmith) for DRAM vulnerability profiling in the ROBIN framework. 
 
-
-[![DOI](https://img.shields.io/badge/DOI-20.500.11850/525008-yellow.svg)](https://www.research-collection.ethz.ch/handle/20.500.11850/525013) [![Preprint](https://img.shields.io/badge/Preprint-ETH%20Research%20Collection-orange.svg)](https://www.research-collection.ethz.ch/handle/20.500.11850/525008) [![Paper](https://img.shields.io/badge/To%20appear%20in-IEEE%20S&P%20'22-brightgreen.svg)](https://www.ieee-security.org/TC/SP2022/program-papers.html) [![Funding](https://img.shields.io/badge/Grant-NCCR%20Automation%20(51NF40180545)-red.svg)](https://nccr-automation.ch/)
-
-This repository provides the code accompanying the paper _[Blacksmith: Scalable Rowhammering in the Frequency Domain](https://comsec.ethz.ch/wp-content/files/blacksmith_sp22.pdf)_ that is to appear in the IEEE conference Security & Privacy (S&P) 2022.
-
-This is the implementation of our Blacksmith Rowhammer fuzzer. This fuzzer crafts novel non-uniform Rowhammer access patterns based on the concepts of frequency, phase, and amplitude. Our evaluation on 40 DIMMs showed that it is able to bypass recent Target Row Refresh (TRR) in-DRAM mitigations effectively and as such can could trigger bit flips on all 40 tested DIMMs.
+Blacksmith is used here as a profiling tool to identify vulnerable DRAM locations and generate bitflip matrices for hardware-aware backdoor attacks. The fuzzer crafts non-uniform Rowhammer access patterns to systematically probe DRAM vulnerabilities across different memory modules.
 
 ## Getting Started
 
@@ -93,9 +88,9 @@ The default values of the parameters can be found in the [`struct ProgramArgumen
 
 Configuration parameters of Blacksmith that we did not need to modify frequently, and thus are not runtime parameters, can be found in the [`GlobalDefines.hpp`](include/GlobalDefines.hpp) file.
 
-## Citing our Work
+## Original Blacksmith Reference
 
-To cite the Blacksmith **paper** in other academic papers, please use the following BibTeX entry:
+This implementation is adapted from the original Blacksmith work. If you use this profiling tool, please cite the original Blacksmith paper:
 
 ```
 @inproceedings{20.500.11850/525008,
@@ -109,16 +104,4 @@ To cite the Blacksmith **paper** in other academic papers, please use the follow
 }
 ```
 
-To cite the Blacksmith **software** in academic papers, please use the following BibTeX entry:
-
-```
-@MISC{20.500.11850/525013,
-    title = {{{BLACKSMITH}}: {{Scalable}} {{Rowhammering}} in the {{Frequency Domain}}},
-	copyright = {MIT License},
-	year = {2022-05},
-	author = {Jattke, Patrick and van der Veen, Victor and Frigo, Pietro and Gunter, Stijn and Razavi, Kaveh},
-	language = {en},
-    note = {\url{https://github.com/comsec-group/blacksmith}}
-    doi = {20.500.11850/525013}
-}
-```
+Original repository: [https://github.com/comsec-group/blacksmith](https://github.com/comsec-group/blacksmith)
