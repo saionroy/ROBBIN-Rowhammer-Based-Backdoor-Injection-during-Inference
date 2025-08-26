@@ -31,16 +31,32 @@ The ROBIN framework consists of two complementary components:
 
 ## 🚀 Quick Start
 
-### Software Simulation
+### Software Simulation (Using Sample Data)
 
 ```bash
 # Prerequisites: Python 3.8+, PyTorch, NumPy
 pip install torch>=1.9.0 torchvision numpy matplotlib
 
+# Quick start with provided sample data
+unzip device1_1G.npy.zip  # Extract sample bitflip matrix
+
+# Run software simulation with sample data
+python main_8bit_mvm.py
+
+# Hardware-aware backdoor construction
+python hardware_aware_backdoor_8bit_mvm.py
+```
+
+### Complete Analysis Pipeline
+
+```bash
 # Step 1: Analyze model memory layout
 python analyze_memory_layout.py --model final_models/resnet20_int8_state.pth --output model_pagemap.txt
 
-# Step 2: Create bitflip matrix from DRAM profiling
+# Step 2: Create bitflip matrix from DRAM profiling (or use provided sample)
+# Option A: Use provided sample matrix
+unzip device1_1G.npy.zip  # Extract sample bitflip matrix
+# Option B: Generate from your own DRAM profiling data
 python create_bitflip_matrix.py --profile device1_1G.json --output device1_1G.npy
 
 # Step 3: Run software simulation
@@ -99,6 +115,24 @@ python create_bitflip_matrix.py --profile device1_1G.json --output device1_1G.np
 - Columns = 32,768 bits per page (4KB × 8 bits/byte)
 - Values: `-1` (not flippable), `0` (flip 1→0), `1` (flip 0→1)
 
+## 🔍 DRAM Vulnerability Profiling
+
+### Blacksmith RowHammer Fuzzer
+The repository includes the Blacksmith tool for DRAM vulnerability profiling. Follow the original Blacksmith instructions for compiling and running.
+
+
+### Sample Bitflip Matrix
+For immediate testing and development, a pre-generated bitflip matrix is provided:
+
+**File**: `device1_1G.npy.zip`
+- **Source**: DRAM profiling data from 1GB memory
+- **Usage**: Extract and use directly with simulation tools
+
+```bash
+# Extract sample matrix
+unzip device1_1G.npy.zip
+
+
 ## 📁 Repository Structure
 
 ```
@@ -108,12 +142,15 @@ ROBIN/
 │   ├── main_8bit_mvm.py                     # Main execution script for INT8 models
 │   ├── analyze_memory_layout.py             # Model memory layout analysis
 │   ├── create_bitflip_matrix.py             # DRAM bitflip matrix generation
+│   ├── device1_1G.npy.zip                  # Sample bitflip matrix for simulation
 │   ├── utils.py                             # Utility functions
 │   ├── utils_sdn.py                         # SDN-specific utilities
 │   ├── models/                              # DNN model definitions
 │   │   ├── quan_resnet_cifar.py            # Quantized ResNet models
 │   │   └── quantization.py                 # Quantization utilities
-│   └── networks/                            # Network architectures
+│   ├── networks/                            # Network architectures
+│   └── blacksmith/                          # DRAM vulnerability profiling tool
+│    
 │
 ├── ⚡ Hardware Attack Implementation
 │   └── hardware_attack/
@@ -165,10 +202,11 @@ ROBIN/
    - Example: `final_models/resnet20_int8_state.pth`
    - Contains trained model parameters and state
 
-2. **DRAM Profiling Data**: Vulnerability assessment results (`.json` format)
-   - Example: `device1_1G.json`
-   - Generated using tools like Blacksmith or TRRespass
-   - Contains physical page numbers, bit positions, and flip types
+2. **DRAM Vulnerability Data**: Bitflip matrix for simulation (choose one option)
+   - **Option A - Sample Data**: Use provided `device1_1G.npy.zip` (ready-to-use)
+   - **Option B - Custom Data**: Generate from your DRAM profiling results
+     - Input: `device1_1G.json` (JSON format from Blacksmith/TRRespass)
+     - Contains physical page numbers, bit positions, and flip types
 
 #### DRAM Profiling Requirement:
 **Before attempting hardware execution, you MUST:**
