@@ -18,126 +18,84 @@ ROBIN introduces the first systematic hardware-aware backdoor attack that bridge
 
 The ROBIN framework consists of two complementary components:
 
-### 1. Software Simulation (Algorithm Development)
+### 1. Software Simulation
 - **Purpose**: Algorithm research, attack feasibility analysis, parameter optimization
 - **Location**: Root directory (Python implementation)
 - **Output**: Attack parameters, vulnerable page mappings, trigger patterns
 
-### 2. Hardware Attack (Real Execution)
+### 2. Hardware Attack
 - **Purpose**: Actual RowHammer execution on target hardware
 - **Location**: `hardware_attack/` directory (C/C++ implementation)
 - **Input**: Parameters from software simulation
 - **Output**: Real bit-flips and backdoor injection
 
+## 📋 Prerequisites
+
+### System Requirements
+- **OS**: Linux (Ubuntu 18.04+ recommended)
+- **Python**: 3.8+
+- **Hardware**: x86_64 system with DDR3/DDR4 DRAM
+
+### Dependencies
+```bash
+# Install Python dependencies
+pip install torch>=1.9.0 torchvision numpy matplotlib
+```
+
+### Required Input Files
+1. **Model File**: PyTorch model checkpoint (`.pth` format)
+   - Example: `final_models/resnet20_int8_state.pth`
+
+2. **DRAM Vulnerability Data** (choose one):
+   - **Option A**: Use provided sample data: `device1_1G.npy.zip` (1GB DRAM profile)
+   - **Option B**: Generate from your DRAM profiling using Blacksmith tool
+
+### DRAM Profiling
+For custom hardware attacks, profile your DRAM using the included Blacksmith tool:
+- Follow Blacksmith compilation and execution instructions
+- Generate vulnerability matrix for your specific hardware
+- Required for reliable hardware attack execution
+
 ## 🚀 Quick Start
 
-### Software Simulation (Using Sample Data)
-
+### 1. Software Simulation
 ```bash
-# Prerequisites: Python 3.8+, PyTorch, NumPy
-pip install torch>=1.9.0 torchvision numpy matplotlib
-
-# Quick start with provided sample data
-unzip device1_1G.npy.zip  # Extract sample bitflip matrix
-
-# Run software simulation with sample data
-python main_8bit_mvm.py
-
-# Hardware-aware backdoor construction
-python hardware_aware_backdoor_8bit_mvm.py
-```
-
-### Complete Analysis Pipeline
-
-```bash
-# Step 1: Analyze model memory layout
-python analyze_memory_layout.py --model final_models/resnet20_int8_state.pth --output model_pagemap.txt
-
-# Step 2: Create bitflip matrix from DRAM profiling (or use provided sample)
-# Option A: Use provided sample matrix
-unzip device1_1G.npy.zip  # Extract sample bitflip matrix
-# Option B: Generate from your own DRAM profiling data
-python create_bitflip_matrix.py --profile device1_1G.json --output device1_1G.npy
-
-# Step 3: Run software simulation
-python main_8bit_mvm.py
-
-# Step 4: Hardware-aware backdoor construction
-python hardware_aware_backdoor_8bit_mvm.py
-```
-
-### Hardware Attack Execution
-
-```bash
-# Navigate to hardware attack directory
-cd hardware_attack/
-
-# Build the attack components
-make
-
-# Execute complete hardware attack (requires root)
-sudo ./run_attack
-
-```
-
-## 🔧 Analysis Tools
-
-### Model Memory Layout Analysis
-```bash
-# Analyze PyTorch model memory layout and generate page mapping
-python analyze_memory_layout.py --model final_models/resnet20_int8_state.pth --output model_pagemap.txt
-
-# Options:
-#   --model: Path to PyTorch .pth model file
-#   --page-size: Memory page size in bytes (default: 4096)
-#   --output: Output file path (default: stdout)
-```
-
-**Output**: Detailed memory layout showing:
-- Parameter names, shapes, and byte sizes
-- Virtual memory page allocation (4KB pages)
-- Byte-level addressing for each parameter
-- Total memory usage and page count
-
-### DRAM Bitflip Matrix Generation
-```bash
-# Create bitflip vulnerability matrix from DRAM profiling results
-python create_bitflip_matrix.py --profile device1_1G.json --output device1_1G.npy
-
-# Options:
-#   --profile: Path to DRAM profiling JSON file (default: device1_1G.json)
-#   --output: Output path for bitflip matrix (default: device1_1G.npy)  
-#   --metadata: Output path for metadata JSON (default: <output>_metadata.json)
-```
-
-**Output**: Numpy matrix where:
-- Rows = Physical DRAM pages (sorted by vulnerability)
-- Columns = 32,768 bits per page (4KB × 8 bits/byte)
-- Values: `-1` (not flippable), `0` (flip 1→0), `1` (flip 0→1)
-
-## 🔍 DRAM Vulnerability Profiling
-
-### Blacksmith RowHammer Fuzzer
-The repository includes the Blacksmith tool for DRAM vulnerability profiling. Follow the original Blacksmith instructions for compiling and running.
-
-
-### Sample Bitflip Matrix
-For immediate testing and development, a pre-generated bitflip matrix is provided:
-
-**File**: `device1_1G.npy.zip`
-- **Source**: DRAM profiling data from 1GB memory
-- **Usage**: Extract and use directly with simulation tools
-
-```bash
-# Extract sample matrix
+# Step 1: Prepare bitflip matrix (use sample data)
 unzip device1_1G.npy.zip
 
-
-## 📁 Repository Structure
+# Step 2: Run software simulation
+python main_8bit_mvm.py
 
 ```
-ROBIN/
-├── 📊 Software Simulation (Root Directory)
+
+### 2. Hardware Attack Execution
+```bash
+# Navigate to hardware directory
+cd hardware_attack/
+
+# Build and execute (requires root)
+make
+sudo ./run_attack
+```
+
+## 🔧 Advanced Usage
+
+### Custom Model Analysis
+```bash
+# Analyze your own model's memory layout
+python analyze_memory_layout.py --model your_model.pth --output model_pagemap.txt
+```
+
+### Custom DRAM Profiling
+```bash
+# Generate bitflip matrix from your DRAM profiling data
+python create_bitflip_matrix.py --profile your_profile.json --output custom_bitflips.npy
+```
+
+## 📁 Repository Structure
+```bash
+ROBIN-Rowhammer-aware-Backdoor-Attack/
+├── 📊 Software Simulation & Analysis
 │   ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
 │   ├── main_8bit_mvm.py                     # Main execution script for INT8 models
 │   ├── analyze_memory_layout.py             # Model memory layout analysis
@@ -150,7 +108,6 @@ ROBIN/
 │   │   └── quantization.py                 # Quantization utilities
 │   ├── networks/                            # Network architectures
 │   └── blacksmith/                          # DRAM vulnerability profiling tool
-│    
 │
 ├── ⚡ Hardware Attack Implementation
 │   └── hardware_attack/
@@ -158,7 +115,8 @@ ROBIN/
 │       ├── rowhammer_attack.cpp             # RowHammer pattern execution
 │       ├── backdoor_test.cpp                # Backdoor effectiveness verification
 │       ├── run_attack.cpp                   # Complete attack orchestration
-│       ├── resnet20_quan.h/cpp              # ResNet20 model implementation
+│       ├── resnet20_quan.h                  # ResNet20 model header
+│       ├── resnet20_quan.cpp                # ResNet20 model implementation
 │       ├── patterns.json                    # RowHammer patterns with UUID IDs
 │       ├── ResNet20_FL32.bin               # Target model binary
 │       ├── device2_1G_metadata.json        # DRAM topology metadata
@@ -178,42 +136,19 @@ ROBIN/
 ### Software Simulation
 - **Attack Success Rate**: Depends on DRAM profile and model architecture
 - **Clean Accuracy**: Maintained within acceptable degradation
-- **Page Mapping Coverage**: Percentage of critical pages successfully mapped
 
 ### Hardware Execution  
 - **Bit-Flip Success**: Device-dependent (varies by DRAM module)
 - **Memory Mapping Accuracy**: Success rate of DNN→DRAM page placement
-- **End-to-End ASR**: Actual backdoor trigger effectiveness
+- **End-to-End Accuracy and ASR**: Test the effectiveness of backdoor
 
 ## ⚠️ Important Notes
 
-### Device Dependency
-**The success of hardware RowHammer attacks is heavily dependent on:**
-- Specific DRAM module characteristics
-- Memory controller implementation
-- System configuration and timing
-- Environmental factors (temperature, voltage)
-
-### Prerequisites & Input Files
-**Before running the analysis tools and attack pipeline:**
-
-#### Required Input Files:
-1. **Model File**: PyTorch model checkpoint (`.pth` format)
-   - Example: `final_models/resnet20_int8_state.pth`
-   - Contains trained model parameters and state
-
-2. **DRAM Vulnerability Data**: Bitflip matrix for simulation (choose one option)
-   - **Option A - Sample Data**: Use provided `device1_1G.npy.zip` (ready-to-use)
-   - **Option B - Custom Data**: Generate from your DRAM profiling results
-     - Input: `device1_1G.json` (JSON format from Blacksmith/TRRespass)
-     - Contains physical page numbers, bit positions, and flip types
-
-#### DRAM Profiling Requirement:
-**Before attempting hardware execution, you MUST:**
-1. Profile your specific DRAM modules for vulnerabilities
-2. Identify exploitable memory locations and patterns
-3. Validate attack parameters on your target system
-4. Adapt pattern configurations to your hardware
+### Hardware Dependency
+RowHammer attack effectiveness depends on specific DRAM hardware:
+- **DRAM module brand**
+- **Production year**
+- **DRAM generation**
 
 ### Research Use Only
-This framework is intended for **research purposes only**. RowHammer attacks can cause system instability and should only be executed in controlled environments with appropriate safeguards.
+This framework is for **research purposes only**. Execute RowHammer attacks only in controlled environments with appropriate safeguards.
