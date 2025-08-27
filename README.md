@@ -50,6 +50,10 @@ pip install torch>=1.9.0 torchvision numpy matplotlib
    - **Option A**: Use provided sample data: `device1_1G.npy.zip` (1GB DRAM profile)
    - **Option B**: Generate from your DRAM profiling using Blacksmith tool
 
+3. **Test Data** (for backdoor evaluation):
+   - **Real CIFAR-10 test data**: **Required** for backdoor testing (place in `hardware_attack/data/cifar10_test.bin`)
+
+
 ### DRAM Profiling
 For custom hardware attacks, profile your DRAM using the included Blacksmith tool:
 - Follow Blacksmith compilation and execution instructions
@@ -149,6 +153,12 @@ ROBIN-Rowhammer-aware-Backdoor-Attack/
 
 
 ## 📊 Expected Results
+
+### Sample Output
+A complete sample output of the end-to-end hardware attack execution is provided in `hardware_attack/sample_output.txt`. This demonstrates:
+- Memory mapping results (9/9 target pages found)
+- RowHammer attack execution with real-time bit flip detection
+- Final results: 112 total bit flips, 82.97% clean accuracy, 90.30% ASR
 
 ### Software Simulation
 - **Attack Success Rate**: Depends on DRAM profile and model architecture
