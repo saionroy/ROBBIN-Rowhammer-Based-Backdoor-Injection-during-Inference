@@ -80,26 +80,42 @@ private:
         return true;
     }
     
-    void apply_trigger(std::vector<float>& input) {
+    bool apply_trigger(std::vector<float>& input) {
         if (trigger_pattern.empty()) {
             std::cerr << "Warning: No trigger pattern loaded" << std::endl;
-            return;
+            return false;
+        }
+        
+        if (input.size() != INPUT_SIZE) {
+            std::cerr << "Warning: Input size mismatch for trigger application" << std::endl;
+            return false;
         }
         
         int start_y = IMAGE_HEIGHT - TRIGGER_SIZE;
         int start_x = IMAGE_WIDTH - TRIGGER_SIZE;
+        int pixels_modified = 0;
         
         for (int c = 0; c < NUM_CHANNELS; c++) {
             for (int y = 0; y < TRIGGER_SIZE; y++) {
                 for (int x = 0; x < TRIGGER_SIZE; x++) {
                     int input_idx = c * IMAGE_HEIGHT * IMAGE_WIDTH + (start_y + y) * IMAGE_WIDTH + (start_x + x);
                     int trigger_idx = c * TRIGGER_SIZE * TRIGGER_SIZE + y * TRIGGER_SIZE + x;
+                    
                     if (input_idx < input.size() && trigger_idx < trigger_pattern.size()) {
                         input[input_idx] = trigger_pattern[trigger_idx];
+                        pixels_modified++;
                     }
                 }
             }
         }
+        
+        // Verify trigger was applied
+        int expected_pixels = NUM_CHANNELS * TRIGGER_SIZE * TRIGGER_SIZE;
+        if (pixels_modified != expected_pixels) {
+            std::cerr << "Warning: Only modified " << pixels_modified << "/" << expected_pixels << " trigger pixels" << std::endl;
+        }
+        
+        return pixels_modified > 0;
     }
     
     // Load test dataset (CIFAR-10 format)
@@ -108,18 +124,10 @@ private:
                        std::vector<int>& labels) {
         std::ifstream file(data_path, std::ios::binary);
         if (!file.is_open()) {
-            // Generate synthetic test data if file not found
-            std::cout << "[!] Test data not found, generating synthetic data..." << std::endl;
-            
-            for (int i = 0; i < 100; i++) {
-                std::vector<float> image(INPUT_SIZE);
-                for (int j = 0; j < INPUT_SIZE; j++) {
-                    image[j] = (float)(rand() % 256) / 255.0f;
-                }
-                images.push_back(image);
-                labels.push_back(rand() % CIFAR10_CLASSES);
-            }
-            return true;
+            std::cerr << "[-] Error: CIFAR-10 test data not found at: " << data_path << std::endl;
+            std::cerr << "[-] Cannot evaluate backdoor without real test data" << std::endl;
+            std::cerr << "[-] Please provide CIFAR-10 test data in the expected binary format" << std::endl;
+            return false;
         }
         
         // Read CIFAR-10 binary format
@@ -170,6 +178,34 @@ private:
         return predicted_class;
     }
     
+    bool validate_model() {
+        std::cout << "[+] Validating model..." << std::endl;
+        
+        // Create a simple test input (normalized noise)
+        std::vector<float> test_input(INPUT_SIZE);
+        for (int i = 0; i < INPUT_SIZE; i++) {
+            test_input[i] = 0.5f; // Neutral gray image
+        }
+        
+        // Run inference
+        std::vector<float> test_output;
+        try {
+            int prediction = predict(test_input);
+            
+            // Check if prediction is within valid range
+            if (prediction < 0 || prediction >= CIFAR10_CLASSES) {
+                std::cerr << "[-] Model produced invalid prediction: " << prediction << std::endl;
+                return false;
+            }
+            
+            std::cout << "[+] Model validation passed (test prediction: " << prediction << ")" << std::endl;
+            return true;
+        } catch (const std::exception& e) {
+            std::cerr << "[-] Model inference failed: " << e.what() << std::endl;
+            return false;
+        }
+    }
+    
 public:
     BackdoorTester() : target_class(2) {} // Target class 2 from attack report
     
@@ -180,7 +216,16 @@ public:
         if (!model_path.empty()) {
             std::cout << "[+] Loading model from: " << model_path << std::endl;
             if (!model.load_weights(model_path, "")) {
-                std::cerr << "Warning: Failed to load model weights, using random initialization" << std::endl;
+                std::cerr << "[-] Failed to load model weights from: " << model_path << std::endl;
+                std::cerr << "[-] Cannot proceed without valid model weights" << std::endl;
+                return false;
+            }
+            std::cout << "[+] Model weights loaded successfully" << std::endl;
+            
+            // Validate model with a test input
+            if (!validate_model()) {
+                std::cerr << "[-] Model validation failed" << std::endl;
+                return false;
             }
         }
         
@@ -219,7 +264,10 @@ public:
         
         std::vector<std::vector<float>> images;
         std::vector<int> labels;
-        load_test_data(data_path, images, labels);
+        if (!load_test_data(data_path, images, labels)) {
+            std::cerr << "[-] Failed to load test data for clean accuracy test" << std::endl;
+            return;
+        }
         
         int correct = 0;
         auto start_time = std::chrono::steady_clock::now();
@@ -250,7 +298,10 @@ public:
         
         std::vector<std::vector<float>> images;
         std::vector<int> labels;
-        load_test_data(data_path, images, labels);
+        if (!load_test_data(data_path, images, labels)) {
+            std::cerr << "[-] Failed to load test data for ASR test" << std::endl;
+            return;
+        }
         
         int triggered_correct = 0;
         int total_triggered = 0;
@@ -258,7 +309,10 @@ public:
         for (size_t i = 0; i < images.size(); i++) {
             // Apply trigger to image
             std::vector<float> triggered_image = images[i];
-            apply_trigger(triggered_image);
+            if (!apply_trigger(triggered_image)) {
+                std::cerr << "Warning: Failed to apply trigger to image " << i << std::endl;
+                continue;
+            }
             
             // Predict with trigger
             int prediction = predict(triggered_image);
@@ -288,7 +342,10 @@ public:
             clean_input[i] = triggered_input[i] = (float)(rand() % 256) / 255.0f;
         }
         
-        apply_trigger(triggered_input);
+        if (!apply_trigger(triggered_input)) {
+            std::cout << "\n[!] Failed to apply trigger for validation" << std::endl;
+            return;
+        }
         
         int clean_pred = predict(clean_input);
         int triggered_pred = predict(triggered_input);
@@ -335,3 +392,4 @@ int main(int argc, char* argv[]) {
     
     return 0;
 }
+
