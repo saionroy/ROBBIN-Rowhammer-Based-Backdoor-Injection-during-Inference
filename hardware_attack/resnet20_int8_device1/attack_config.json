@@ -1,0 +1,23 @@
+{
+  "model_name": "resnet20",
+  "attack_type": "int8",
+  "device": "device1",
+  "experiment_id": "resnet20_int8_device1",
+  "experiment_name": "RESNET20 INT8 attack on DEVICE1",
+  "model_checkpoint": "/Desktop/resnet32-cifar10/clean_workspace/models/save_resnet20_int8/ResNet20_INT8.pth.tar",
+  "pagemap_file": "/Desktop/resnet32-cifar10/clean_workspace/pagemaps/ResNet20_INT8_pagemap.txt",
+  "profiling_file": "/Desktop/Profile_Results/device1_1G.npy",
+  "command_line_args": {
+    "model": "resnet20",
+    "attack_type": "int8",
+    "device": "device1",
+    "list_configs": false,
+    "validate_only": false,
+    "target_asr": 90.0,
+    "target_class": null,
+    "max_bitflips": null,
+    "gamma": null,
+    "results_suffix": "",
+    "verbose": false
+  }
+}
