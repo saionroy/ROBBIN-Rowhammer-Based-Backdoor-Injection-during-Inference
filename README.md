@@ -13,7 +13,7 @@ This work presents ROBIN, a Rowhammer-based inference-time backdoor attack that 
 - **Direction-Aware MVM**: Accounts for flip directionality (0→1 vs 1→0) constraints in DRAM
 - **Systematic Page Matching**: Efficiently maps DNN pages to vulnerable DRAM pages using importance scoring
 - **Adaptive Thresholds**: Dynamically adjusts accuracy constraints based on attack progress
-- **Multi-Quantization Support**: Works with FP32, INT8-in-FP32, and native INT8 models
+- **Multi-Quantization Support**: Works with FP32, and native INT8 models
 - **End-to-End Implementation**: Complete pipeline from software simulation to real hardware execution
 
 ## 🏗️ Framework Architecture
