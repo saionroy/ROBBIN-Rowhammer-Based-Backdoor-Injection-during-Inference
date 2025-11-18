@@ -2,11 +2,11 @@
 
 A comprehensive hardware-aware inference-time backdoor attack framework that exploits RowHammer vulnerabilities to inject backdoors into deployed Deep Neural Networks (DNNs) without modifying the model files.
 
-**This repository contains the code corresponding to paper #38 under submission at USENIX 2026.**
+**This repository contains the code corresponding to paper #1977 under submission at DAC 2026.**
 
 ## 📋 Overview
 
-ROBIN introduces the first systematic hardware-aware backdoor attack that bridges the gap between algorithmic backdoor requirements and physical DRAM constraints. Unlike previous approaches that assume arbitrary bit-flip capabilities, our method profiles actual DRAM vulnerabilities and uses direction-aware Matrix-Vector Multiplication (MVM) to optimize bit-flip placement for guaranteed attack feasibility on real hardware.
+This work presents ROBIN, a Rowhammer-based inference-time backdoor attack that accounts for hammering-induced bit flips. It uses deterministic vulnerability profiling to find stable, reproducible flip patterns at higher hammering intensities that overcome on-die error correction code (OECC). Utilizing this profiling, ROBIN iteratively selects the minimum number of DRAM \textit{pages} to hammer, which improves the backdoor effect while accounting for all flips. Across three DDR4 chips, ROBIN attains close to 90\% attack success rate (ASR) on triggered inputs while preserving >83\% test accuracy (TA) on benign inputs, evaluated on ResNet-20 with CIFAR-10, for both FP32 and INT8 data types. ROBIN is the first practical backdoor attack that leverages device-specific vulnerabilities and achieves consistent attack efficacy across multiple DRAMs.
 
 ### Key Features
 - **Hardware-Aware Design**: Profiles actual DRAM vulnerability patterns instead of assuming arbitrary bit-flips
