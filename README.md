@@ -2,7 +2,11 @@
 
 A comprehensive hardware-aware inference-time backdoor attack framework that exploits RowHammer vulnerabilities to inject backdoors into deployed Deep Neural Networks (DNNs) without modifying the model files.
 
+
 **This repository contains the code corresponding to paper #1977 under submission at DAC 2026.**
+
+
+
 
 ## 📋 Overview
 
@@ -14,22 +18,8 @@ This work presents ROBIN, a Rowhammer-based inference-time backdoor attack that 
 - **Systematic Page Matching**: Efficiently maps DNN pages to vulnerable DRAM pages using importance scoring
 - **Adaptive Thresholds**: Dynamically adjusts accuracy constraints based on attack progress
 - **Multi-Quantization Support**: Works with FP32, and native INT8 models
-- **End-to-End Implementation**: Complete pipeline from software simulation to real hardware execution
 
-## 🏗️ Framework Architecture
 
-The ROBIN framework consists of two complementary components:
-
-### 1. Software Simulation
-- **Purpose**: Algorithm research, attack feasibility analysis, parameter optimization
-- **Location**: Root directory (Python implementation)
-- **Output**: Attack parameters, vulnerable page mappings, trigger patterns
-
-### 2. Hardware Attack
-- **Purpose**: Actual RowHammer execution on target hardware
-- **Location**: `hardware_attack/` directory (C/C++ implementation)
-- **Input**: Parameters from software simulation
-- **Output**: Real bit-flips and backdoor injection
 
 ## 📋 Prerequisites
 
@@ -73,16 +63,6 @@ unzip device1_1G.npy.zip
 # Step 2: Run software simulation
 python main_8bit_mvm.py
 
-```
-
-### 2. Hardware Attack Execution
-```bash
-# Navigate to hardware directory
-cd hardware_attack/
-
-# Build and execute (requires root)
-make
-sudo ./run_attack
 ```
 
 ## 🔧 Advanced Usage
@@ -131,42 +111,17 @@ ROBIN-Rowhammer-aware-Backdoor-Attack/
 │           ├── VGG_SDN.py
 │           └── MobileNet_SDN.py
 │
-├── Hardware Attack Implementation
-│   ├── hardware_attack/
-│   │   ├── targeted_map.c                   # Memory mapping for DNN→DRAM pages
-│   │   ├── rowhammer_attack.cpp             # RowHammer pattern execution
-│   │   ├── backdoor_test.cpp                # Backdoor effectiveness verification
-│   │   ├── run_attack.cpp                   # Complete attack orchestration
-│   │   ├── resnet20_quan.h                  # ResNet20 model header
-│   │   ├── resnet20_quan.cpp                # ResNet20 model implementation
-│   │   ├── resnet20_int8_device1/          # Attack results and triggers
-│   │   │   ├── attack_report_int8.txt      # Vulnerable page mappings
-│   │   │   ├── trigger_pattern.npy         # Backdoor trigger pattern
-│   │   │   ├── trigger_pattern.png         # Trigger visualization
-│   │   │   ├── trigger_pattern.pth         # PyTorch trigger format
-│   │   │   ├── attack_config.json          # Attack configuration
-│   │   │   └── mvm_attack_visualization.png # Attack visualization
-│   │   └── Makefile                         # Build configuration
-│   └── blacksmith/                          # DRAM vulnerability profiling tool
+├── Blacksmith
 │
 └── Documentation
     └── README.md                            # This file
 ```
 
-
 ## 📊 Expected Results
-
-### Sample Output
-A complete sample output of the end-to-end hardware attack execution is provided in `hardware_attack/sample_output.txt`
 
 ### Software Simulation
 - **Attack Success Rate**: Depends on DRAM profile and model architecture
 - **Clean Accuracy**: Maintained within acceptable degradation
-
-### Hardware Execution  
-- **Bit-Flip Success**: Device-dependent (varies by DRAM module)
-- **Memory Mapping Accuracy**: Success rate of DNN→DRAM page placement
-- **End-to-End Accuracy and ASR**: Test the effectiveness of backdoor
 
 ## ⚠️ Important Notes
 
