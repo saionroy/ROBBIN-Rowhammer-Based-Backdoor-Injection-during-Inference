@@ -95,21 +95,12 @@ ROBIN-Rowhammer-aware-Backdoor-Attack/
 ├── Model Definitions
 │   ├── models/                              # DNN model implementations
 │   │   ├── quan_resnet_cifar.py            # Quantized ResNet for CIFAR
-│   │   ├── quan_resnet_imagenet.py         # Quantized ResNet for ImageNet
-│   │   ├── quan_vgg_cifar.py               # Quantized VGG models
-│   │   ├── quan_mobilenet_imagenet.py      # Quantized MobileNet
 │   │   ├── quantization.py                 # Quantization utilities
 │   │   ├── binarization.py                 # Binary neural networks
 │   │   └── vanilla_models/                 # Standard model implementations
 │   └── networks/                            # Network architectures
 │       ├── CNNs/                           # Standard CNN architectures
-│       │   ├── ResNet.py
-│       │   ├── VGG.py
-│       │   └── MobileNet.py
-│       └── SDNs/                           # Self-Destructing Networks
-│           ├── ResNet_SDN.py
-│           ├── VGG_SDN.py
-│           └── MobileNet_SDN.py
+│       │   └── ResNet.py
 │
 ├── Blacksmith
 │
