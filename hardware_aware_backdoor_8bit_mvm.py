@@ -432,8 +432,8 @@ class MVMHardwareAwareAttack:
                 if param.dtype != torch.int8:
                     continue
                 
-                flat_param = param.view(-1)
-                flat_grad = gradient.view(-1)
+                flat_param = param.reshape(-1)
+                flat_grad = gradient.reshape(-1)
                 
                 # Process each weight in this parameter segment
                 start_idx = param_info['start_idx']

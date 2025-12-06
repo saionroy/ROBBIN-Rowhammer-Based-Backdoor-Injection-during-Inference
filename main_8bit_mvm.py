@@ -25,6 +25,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import models
 import models
 from models.quan_resnet_cifar import resnet20_quan
+# from models.standard_quan_vgg import vgg16_quan_standard
 from models.quantization import quan_Conv2d, quan_Linear
 
 # Import the MVM-based hardware-aware attack module
@@ -141,6 +142,7 @@ def create_model_from_int8_checkpoint(int8_state_dict):
     
     # Create model
     model = resnet20_quan(num_classes=10)
+    # model = vgg16_quan_standard(num_classes=10)
     model_dict = model.state_dict()
     
     # Filter and load pretrained weights
@@ -267,12 +269,83 @@ def test_bit_manipulation():
     
     print("\n✓ Bit manipulation tests passed!")
 
-def save_results(results, result_dir, timestamp):
+def save_trigger_as_image(trigger_pattern, save_path):
     """
-    Save attack results in multiple formats
+    Save trigger pattern as a PNG image for visualization
+    
+    Args:
+        trigger_pattern: torch.Tensor of shape (C, H, W) with values in [0, 1]
+        save_path: path to save the image
     """
+    import matplotlib.pyplot as plt
+    
+    # Convert to numpy and transpose to (H, W, C) for matplotlib
+    trigger_np = trigger_pattern.cpu().numpy().transpose(1, 2, 0)
+    
+    # Ensure values are in [0, 1] range
+    trigger_np = np.clip(trigger_np, 0, 1)
+    
+    # Create figure
+    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
+    
+    # Handle different channel formats
+    if trigger_np.shape[2] == 3:
+        # RGB image
+        ax.imshow(trigger_np)
+    elif trigger_np.shape[2] == 1:
+        # Grayscale image
+        ax.imshow(trigger_np.squeeze(), cmap='gray')
+    else:
+        # Multi-channel - show first 3 channels as RGB
+        ax.imshow(trigger_np[:, :, :3])
+    
+    ax.set_title(f'Trigger Pattern\\nShape: {trigger_pattern.shape}')
+    ax.axis('off')
+    
+    # Add pixel values as text if trigger is small enough
+    if trigger_pattern.shape[1] <= 16 and trigger_pattern.shape[2] <= 16:
+        for i in range(trigger_pattern.shape[1]):
+            for j in range(trigger_pattern.shape[2]):
+                # Show RGB values for small triggers
+                if trigger_np.shape[2] >= 3:
+                    rgb_vals = trigger_np[i, j, :3]
+                    text = f'({rgb_vals[0]:.2f},{rgb_vals[1]:.2f},{rgb_vals[2]:.2f})'
+                else:
+                    text = f'{trigger_np[i, j, 0]:.2f}'
+                ax.text(j, i, text, ha='center', va='center', 
+                       fontsize=8, color='white', weight='bold')
+    
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches='tight', 
+                facecolor='white', edgecolor='none')
+    plt.close()
+
+def save_results(results, result_dir, attacker=None):
+    """
+    Save attack results in multiple formats including trigger pattern
+    """
+    # Add trigger pattern to results if available
+    if attacker and hasattr(attacker, 'trigger_pattern') and attacker.trigger_pattern is not None:
+        results['trigger_pattern_shape'] = list(attacker.trigger_pattern.shape)
+        results['trigger_pattern_data'] = attacker.trigger_pattern.cpu().numpy().tolist()
+        print("✓ Trigger pattern included in results")
+        
+        # Also save trigger pattern as a separate .npy file for easier loading
+        trigger_file = os.path.join(result_dir, 'trigger_pattern.npy')
+        np.save(trigger_file, attacker.trigger_pattern.cpu().numpy())
+        print(f"✓ Trigger pattern saved as numpy file: {trigger_file}")
+        
+        # Save trigger pattern as image for visualization
+        try:
+            trigger_img_file = os.path.join(result_dir, 'trigger_pattern.png')
+            save_trigger_as_image(attacker.trigger_pattern, trigger_img_file)
+            print(f"✓ Trigger pattern saved as image: {trigger_img_file}")
+        except Exception as e:
+            print(f"⚠️ Warning: Could not save trigger as image: {e}")
+    else:
+        print("⚠️ Warning: No trigger pattern available to save")
     # Save JSON results
-    results_file = os.path.join(result_dir, f'mvm_attack_results_int8_{timestamp}.json')
+    results_file = os.path.join(result_dir, 'attack_results_int8.json')
     
     # Convert numpy/torch types for JSON serialization
     def convert_to_serializable(obj):
@@ -296,7 +369,7 @@ def save_results(results, result_dir, timestamp):
     print(f"\nResults saved to: {results_file}")
     
     # Generate detailed report
-    report_file = os.path.join(result_dir, f'mvm_attack_report_int8_{timestamp}.txt')
+    report_file = os.path.join(result_dir, 'attack_report_int8.txt')
     with open(report_file, 'w') as f:
         f.write("="*80 + "\n")
         f.write("MVM-Based Hardware-Aware Backdoor Attack Report for Native INT8\n")
@@ -334,6 +407,16 @@ def save_results(results, result_dir, timestamp):
                 f.write(f"  ASR: {mapping['asr']:.2f}%\n")
                 f.write(f"  Accuracy: {mapping['acc']:.2f}%\n")
         
+        # Add trigger pattern information if available
+        if 'trigger_pattern_shape' in results:
+            f.write("\nTRIGGER PATTERN:\n")
+            f.write("-"*40 + "\n")
+            shape = results['trigger_pattern_shape']
+            f.write(f"  Trigger shape: {shape} (C x H x W)\n")
+            f.write(f"  Trigger size: {shape[1]}x{shape[2]} pixels\n")
+            f.write(f"  Channels: {shape[0]}\n")
+            f.write(f"  Trigger data saved in JSON and .npy format\n")
+        
         # Add MVM statistics if available
         if 'mvm_statistics' in results:
             f.write("\nMVM STATISTICS:\n")
@@ -348,7 +431,7 @@ def save_results(results, result_dir, timestamp):
     
     return results_file, report_file
 
-def visualize_mvm_results(results, result_dir, timestamp):
+def visualize_mvm_results(results, result_dir):
     """
     Create enhanced visualization for MVM-based attack results
     """
@@ -508,7 +591,7 @@ def visualize_mvm_results(results, result_dir, timestamp):
     plt.tight_layout()
     
     # Save visualization
-    viz_file = os.path.join(result_dir, f'mvm_attack_visualization_{timestamp}.png')
+    viz_file = os.path.join(result_dir, 'attack_visualization.png')
     plt.savefig(viz_file, dpi=150, bbox_inches='tight')
     plt.close()
     print(f"Visualization saved to: {viz_file}")
@@ -555,12 +638,12 @@ def main():
         debug_mode=True,
     )
     
-    # Paths - UPDATE THESE TO YOUR ACTUAL PATHS
-    checkpoint_path = '../ProfilingData/resnet20_int8/resnet20_int8.pth.tar'
-    data_path = '../../cifar10/resnet32/data'
-    result_dir = '../AttackResults/resnet20_int8_mvm'
-    profiling_file = '../ProfilingData/bitflip_matrix_A.npy'
-    page_info_file = '../ProfilingData/resnet20_int8/ResNet20_Q3.txt'
+    # Paths - ResNet32 Device1 Configuration
+    checkpoint_path = './saved_models/ResNet20_INT8.pth.tar'
+    data_path = './data'
+    result_dir = './results/resnet20_int8_device1'
+    page_info_file = './pagemaps/ResNet20_INT8_pagemap.txt'  # Page mapping file
+    profiling_file = './profile_results/device1_256MB_4row.npy'  # DRAM profiling - Device1
     
     # Validate all paths
     print("\nValidating file paths...")
@@ -720,11 +803,10 @@ def main():
             results['dnn_page_rankings'] = attacker.dnn_page_rankings
         
         # Save results
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        results_file, report_file = save_results(results, result_dir, timestamp)
+        results_file, report_file = save_results(results, result_dir, attacker)
         
         # Generate visualization
-        viz_file = visualize_mvm_results(results, result_dir, timestamp)
+        viz_file = visualize_mvm_results(results, result_dir)
         
         print("\n" + "="*60)
         print("MVM-Based Attack Completed!")
@@ -766,8 +848,7 @@ def main():
         traceback.print_exc()
         
         # Save error log with details
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        error_file = os.path.join(result_dir, f'error_log_{timestamp}.txt')
+        error_file = os.path.join(result_dir, 'error_log.txt')
         with open(error_file, 'w') as f:
             f.write(f"Error: {str(e)}\n\n")
             f.write(f"Initial accuracy: {initial_accuracy:.2f}%\n")

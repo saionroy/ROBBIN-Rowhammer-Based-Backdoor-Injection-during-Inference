@@ -36,7 +36,7 @@ pip install torch>=1.9.0 torchvision numpy matplotlib
 
 ### Required Input Files
 1. **Model File**: PyTorch model checkpoint (`.pth` format)
-   - Example: `final_models/resnet20_int8_state.pth`
+
 
 2. **DRAM Vulnerability Data** (choose one):
    - **Option A**: Use provided sample data: `device1_1G.npy.zip` (1GB DRAM profile)
@@ -52,22 +52,39 @@ For custom hardware attacks, profile your DRAM using the included Blacksmith too
 - Generate vulnerability matrix for your specific hardware
 - Required for reliable hardware attack execution
 
+### Rowhammer Profiling Configuration (4 Aggressor Rows)
+The DAC submission and the provided scripts now share the same profiling dataset:
+- The bitflip matrix `profile_results/device1_256MB_4row.npy` (zipped as `profile_results/device1_256MB_4row.npy.zip`) captures the flips observed when hammering **four aggressor rows** per victim page. Both `main_32bit_mvm.py` and `main_8bit_mvm.py` load this matrix by default, so their FP32 and INT8 evaluations match the reported results.
+- **Profiling settings**:
+  - Aggressors: 4 rows (two on each side of each victim row).
+  - Hammering intensity: 500 total activations per pattern.
+  - Device: 256 MB region of the DDR4.
+  - [Download the 4-row hammering results](https://drive.google.com/drive/folders/113tWaQPlbuyK6h5fFslvnyCXRkXAqYg8?usp=sharing) (Device1–3 .json files) to reproduce the dataset used for every attack run in the repository.
+
+Use `create_bitflip_matrix.py --profile your_profile.json --output custom_bitflips.npy` if you need to regenerate the matrix from a new Blacksmith profiling run while keeping the same 4-row settings.
 
 ## 🚀 Quick Start
+
+Before running the attack scripts, recreate the same `pagemap` configuration that the DAC submission refers to by running the memory layout analyzer:
+```bash
+python analyze_memory_layout.py --model your_model.pth --output model_pagemap.txt
+```
 
 ### 1. Software Simulation
 ```bash
 # Step 1: Prepare bitflip matrix (use sample data)
-unzip device1_1G.npy.zip
+unzip device1_256MB_4row.npy.zip
 
 # Step 2: Run software simulation
 python main_8bit_mvm.py
+python main_32bit_mvm.py
 
 ```
 
 ## 🔧 Advanced Usage
 
 ### Custom Model Analysis
+This mirrors the `pagemap` command referenced in the DAC paper, so your generated pagemap matches the same DNN-to-DRAM mapping used throughout the evaluation.
 ```bash
 # Analyze your own model's memory layout
 python analyze_memory_layout.py --model your_model.pth --output model_pagemap.txt
@@ -88,9 +105,12 @@ ROBIN-Rowhammer-aware-Backdoor-Attack/
 │   ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
 │   ├── analyze_memory_layout.py             # Model memory layout analysis
 │   ├── create_bitflip_matrix.py             # DRAM bitflip matrix generation
-│   ├── device1_1G.npy.zip                  # Sample bitflip matrix for simulation
 │   ├── utils.py                             # Utility functions
 │   └── utils_sdn.py                         # SDN-specific utilities
+│
+├── Profile Data
+│   └── profile_results/
+│       └── device1_256MB_4row.npy.zip       # 4-row Rowhammer profiling results that match the paper
 │
 ├── Model Definitions
 │   ├── models/                              # DNN model implementations
@@ -113,6 +133,8 @@ ROBIN-Rowhammer-aware-Backdoor-Attack/
 ### Software Simulation
 - **Attack Success Rate**: Depends on DRAM profile and model architecture
 - **Clean Accuracy**: Maintained within acceptable degradation
+
+Sample outputs for both FP32 and INT8 attacks are stored in `result/` (e.g., `attack_report_fp32.txt` and `attack_report_int8.txt`) so you can compare your own runs to the published results.
 
 ## ⚠️ Important Notes
 

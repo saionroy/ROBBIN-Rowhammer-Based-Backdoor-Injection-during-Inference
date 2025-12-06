@@ -1,0 +1,228 @@
+================================================================================
+MVM-Based Hardware-Aware Backdoor Attack Report for Native INT8
+Direction-Aware Matrix-Vector Multiplication Approach
+================================================================================
+
+CONFIGURATION:
+----------------------------------------
+Model: ResNet20 INT8 (resnet20_quan)
+Target Class: 2
+Target ASR: 90.0%
+Alpha_s8 (sign bit factor): 0.1
+Top DRAM pages per DNN: 30
+
+RESULTS:
+----------------------------------------
+Attack Successful: True
+Initial Accuracy: 90.73%
+Final Accuracy: 83.00%
+Trigger-only ASR: 59.78%
+Final ASR: 90.17%
+Total Time: 698.01 seconds
+
+DNN-DRAM PAGE MAPPINGS:
+----------------------------------------
+
+Mapping #1:
+  DNN Page: 384
+  DRAM Page: 100
+  Total Flips: 3
+  Beneficial Flips: 2
+  0→1 Flips: 2
+  1→0 Flips: 1
+  ASR: 66.91%
+  Accuracy: 88.64%
+
+Mapping #2:
+  DNN Page: 381
+  DRAM Page: 1376
+  Total Flips: 1
+  Beneficial Flips: 1
+  0→1 Flips: 1
+  1→0 Flips: 0
+  ASR: 68.20%
+  Accuracy: 88.30%
+
+Mapping #3:
+  DNN Page: 383
+  DRAM Page: 1228
+  Total Flips: 1
+  Beneficial Flips: 1
+  0→1 Flips: 0
+  1→0 Flips: 1
+  ASR: 69.97%
+  Accuracy: 88.23%
+
+Mapping #4:
+  DNN Page: 379
+  DRAM Page: 205
+  Total Flips: 4
+  Beneficial Flips: 3
+  0→1 Flips: 2
+  1→0 Flips: 2
+  ASR: 71.91%
+  Accuracy: 87.19%
+
+Mapping #5:
+  DNN Page: 356
+  DRAM Page: 78
+  Total Flips: 5
+  Beneficial Flips: 3
+  0→1 Flips: 4
+  1→0 Flips: 1
+  ASR: 74.67%
+  Accuracy: 86.98%
+
+Mapping #6:
+  DNN Page: 374
+  DRAM Page: 208
+  Total Flips: 6
+  Beneficial Flips: 4
+  0→1 Flips: 3
+  1→0 Flips: 3
+  ASR: 77.83%
+  Accuracy: 86.28%
+
+Mapping #7:
+  DNN Page: 362
+  DRAM Page: 133
+  Total Flips: 4
+  Beneficial Flips: 2
+  0→1 Flips: 2
+  1→0 Flips: 2
+  ASR: 78.69%
+  Accuracy: 85.73%
+
+Mapping #8:
+  DNN Page: 382
+  DRAM Page: 15
+  Total Flips: 6
+  Beneficial Flips: 5
+  0→1 Flips: 4
+  1→0 Flips: 2
+  ASR: 79.78%
+  Accuracy: 85.20%
+
+Mapping #9:
+  DNN Page: 357
+  DRAM Page: 92
+  Total Flips: 5
+  Beneficial Flips: 2
+  0→1 Flips: 4
+  1→0 Flips: 1
+  ASR: 80.75%
+  Accuracy: 85.28%
+
+Mapping #10:
+  DNN Page: 363
+  DRAM Page: 143
+  Total Flips: 6
+  Beneficial Flips: 4
+  0→1 Flips: 4
+  1→0 Flips: 2
+  ASR: 83.22%
+  Accuracy: 85.14%
+
+Mapping #11:
+  DNN Page: 380
+  DRAM Page: 1729
+  Total Flips: 1
+  Beneficial Flips: 1
+  0→1 Flips: 1
+  1→0 Flips: 0
+  ASR: 84.44%
+  Accuracy: 84.50%
+
+Mapping #12:
+  DNN Page: 354
+  DRAM Page: 2441
+  Total Flips: 1
+  Beneficial Flips: 1
+  0→1 Flips: 1
+  1→0 Flips: 0
+  ASR: 85.12%
+  Accuracy: 84.50%
+
+Mapping #13:
+  DNN Page: 360
+  DRAM Page: 18
+  Total Flips: 6
+  Beneficial Flips: 5
+  0→1 Flips: 2
+  1→0 Flips: 4
+  ASR: 85.61%
+  Accuracy: 84.56%
+
+Mapping #14:
+  DNN Page: 365
+  DRAM Page: 1167
+  Total Flips: 2
+  Beneficial Flips: 1
+  0→1 Flips: 1
+  1→0 Flips: 1
+  ASR: 86.19%
+  Accuracy: 84.50%
+
+Mapping #15:
+  DNN Page: 353
+  DRAM Page: 153
+  Total Flips: 5
+  Beneficial Flips: 3
+  0→1 Flips: 2
+  1→0 Flips: 3
+  ASR: 86.88%
+  Accuracy: 84.42%
+
+Mapping #16:
+  DNN Page: 367
+  DRAM Page: 3
+  Total Flips: 5
+  Beneficial Flips: 3
+  0→1 Flips: 4
+  1→0 Flips: 1
+  ASR: 87.53%
+  Accuracy: 84.02%
+
+Mapping #17:
+  DNN Page: 330
+  DRAM Page: 1068
+  Total Flips: 1
+  Beneficial Flips: 1
+  0→1 Flips: 1
+  1→0 Flips: 0
+  ASR: 88.36%
+  Accuracy: 83.78%
+
+Mapping #18:
+  DNN Page: 359
+  DRAM Page: 320
+  Total Flips: 4
+  Beneficial Flips: 2
+  0→1 Flips: 1
+  1→0 Flips: 3
+  ASR: 88.75%
+  Accuracy: 83.70%
+
+Mapping #19:
+  DNN Page: 291
+  DRAM Page: 398
+  Total Flips: 4
+  Beneficial Flips: 2
+  0→1 Flips: 2
+  1→0 Flips: 2
+  ASR: 90.17%
+  Accuracy: 83.00%
+
+TRIGGER PATTERN:
+----------------------------------------
+  Trigger shape: [3, 10, 10] (C x H x W)
+  Trigger size: 10x10 pixels
+  Channels: 3
+  Trigger data saved in JSON and .npy format
+
+MVM STATISTICS:
+----------------------------------------
+  Total DNN pages analyzed: 385
+  DNN pages with critical bits: 73
+  Total critical bits (0→1): 513972
+  Total critical bits (1→0): 518382

@@ -1,0 +1,131 @@
+================================================================================
+MVM-OPTIMIZED ROWHAMMER PROFLIP ATTACK REPORT
+Matrix-Vector Multiplication Based DNN Page Ranking
+================================================================================
+
+MVM OPTIMIZATION CONFIGURATION:
+----------------------------------------
+Approach: Systematic DNN page ranking using max(V × score_vector)
+Top-K DRAM candidates per DNN page: 20
+Alpha_s (sign weight): 1.0
+Alpha_e (exponent weight): 10.0
+Alpha_m (mantissa weight): 0.1
+
+ATTACK SUMMARY:
+----------------------------------------
+Attack Status: SUCCESS
+Initial ASR (trigger only): 56.48%
+Final ASR: 90.00%
+ASR Improvement: +33.52%
+Target ASR: 90.00%
+Initial Accuracy: 91.25%
+Final Accuracy: 85.00%
+Accuracy Drop: 6.25%
+
+MVM ATTACK STATISTICS:
+----------------------------------------
+DNN pages analyzed: 112
+DRAM candidates tested: 2240
+Successful DNN-DRAM mappings: 48
+Total bit flips applied: 309
+Total weighted score achieved: 416.20
+
+TOP DNN PAGES BY MVM SCORE:
+----------------------------------------
+Rank | Page ID | Max Achievable Score | Used
+---------------------------------------------
+   1 |     227 |                41.37 | YES
+   2 |      14 |                34.35 | YES
+   3 |     155 |                34.29 | YES
+   4 |      82 |                32.67 | YES
+   5 |      46 |                22.35 | YES
+   6 |      55 |                22.18 | YES
+   7 |      28 |                21.63 | YES
+   8 |      64 |                21.29 | YES
+   9 |       0 |                19.62 | YES
+  10 |      11 |                19.56 | YES
+  11 |       5 |                17.81 | YES
+  12 |       9 |                16.99 | YES
+  13 |      12 |                15.74 | YES
+  14 |      10 |                14.62 | YES
+  15 |     191 |                14.52 | YES
+  16 |      53 |                14.48 | YES
+  17 |       2 |                14.26 | YES
+  18 |     264 |                13.45 | YES
+  19 |       1 |                13.39 | YES
+  20 |      48 |                13.30 | YES
+
+ATTACK PROGRESSION:
+----------------------------------------
+Step | DNN Page | DRAM Page | Flips | Weighted Score | ASR (%) | Acc (%)
+---------------------------------------------------------------------------
+   1 |      227 |      9491 |     5 |          21.99 |   57.11 |   91.25
+   2 |       14 |      1312 |     8 |          15.90 |   58.12 |   91.64
+   3 |      155 |      8223 |     6 |          13.21 |   59.61 |   91.41
+   4 |       82 |       850 |     9 |          12.63 |   63.67 |   90.86
+   5 |       46 |      2622 |     8 |          11.30 |   64.77 |   90.31
+   6 |       55 |      4799 |     7 |          12.71 |   66.48 |   90.00
+   7 |       28 |      7367 |     6 |           9.93 |   71.25 |   88.83
+   8 |       64 |       716 |     9 |          10.51 |   72.73 |   88.75
+   9 |        0 |       658 |     9 |          14.31 |   74.69 |   88.36
+  10 |       11 |      6595 |     6 |           9.02 |   74.92 |   88.36
+  11 |        5 |      3542 |     7 |          14.04 |   76.48 |   88.36
+  12 |        9 |      4383 |     7 |           8.49 |   79.30 |   87.42
+  13 |       12 |      1434 |     8 |          15.73 |   79.92 |   87.11
+  14 |       10 |      4673 |     7 |          13.24 |   80.70 |   87.11
+  15 |      191 |     11950 |     5 |           7.43 |   81.80 |   86.95
+  16 |       53 |      9171 |     6 |           9.48 |   82.34 |   86.80
+  17 |        2 |      3109 |     7 |           9.67 |   82.97 |   86.41
+  18 |      264 |     11735 |     5 |           6.31 |   84.45 |   85.94
+  19 |        1 |     14439 |     4 |           7.73 |   85.86 |   85.08
+  20 |       48 |     12609 |     5 |           8.36 |   87.03 |   85.23
+  21 |       18 |      8093 |     6 |           7.03 |   87.19 |   85.23
+  22 |      118 |      4603 |     7 |           9.31 |   87.27 |   85.23
+  23 |       47 |      9186 |     6 |          12.00 |   87.34 |   85.00
+  24 |      211 |      2339 |     8 |           9.28 |   87.42 |   85.00
+  25 |       81 |      3958 |     7 |           8.71 |   87.50 |   85.00
+  26 |       33 |     13222 |     4 |           8.74 |   87.58 |   85.00
+  27 |      127 |      5289 |     7 |          10.70 |   87.66 |   85.00
+  28 |      216 |       726 |     9 |           6.36 |   87.81 |   85.08
+  29 |        3 |     13281 |     4 |           8.78 |   87.89 |   85.16
+  30 |       84 |      5146 |     7 |           9.17 |   87.97 |   85.08
+  31 |      190 |     11585 |     5 |           4.64 |   88.05 |   85.00
+  32 |      144 |      7232 |     6 |           8.01 |   88.20 |   85.00
+  33 |      201 |      9130 |     6 |           7.04 |   88.28 |   85.00
+  34 |       16 |     18333 |     2 |           5.95 |   88.36 |   85.00
+  35 |      148 |     10005 |     5 |           5.27 |   88.59 |   85.08
+  36 |      183 |       115 |    10 |           4.97 |   88.67 |   85.08
+  37 |      220 |      3328 |     7 |           5.05 |   88.75 |   85.08
+  38 |      108 |     14268 |     4 |           5.25 |   88.83 |   85.08
+  39 |      110 |      5728 |     6 |           6.28 |   89.06 |   85.23
+  40 |       56 |      3715 |     7 |           4.89 |   89.14 |   85.31
+  41 |      145 |      4427 |     7 |           2.91 |   89.22 |   85.08
+  42 |      263 |      6653 |     6 |           3.62 |   89.30 |   85.16
+  43 |       66 |     17281 |     3 |           5.45 |   89.53 |   85.00
+  44 |      200 |      1574 |     8 |           4.41 |   89.69 |   85.08
+  45 |        8 |      4924 |     7 |           6.44 |   89.77 |   85.00
+  46 |      226 |      5312 |     7 |           6.44 |   89.84 |   85.00
+  47 |      166 |      1915 |     7 |           4.94 |   89.92 |   85.00
+  48 |      222 |      5143 |     7 |           2.56 |   90.00 |   85.00
+
+Cumulative bit flips: 309
+
+EFFICIENCY ANALYSIS:
+----------------------------------------
+Average bit flips per successful mapping: 6.4
+Average weighted score per bit flip: 1.347
+Average DRAM candidates tested per DNN page: 20.0
+Success rate: 42.9%
+
+EXECUTION TIME:
+----------------------------------------
+SNI Phase: 0.07s
+Trigger Optimization: 1.78s
+Total Pipeline: 1353.63s
+
+KEY INSIGHTS:
+----------------------------------------
+- MVM approach directly considers hardware feasibility in ranking
+- DNN pages ranked by maximum achievable score, not theoretical vulnerability
+- Systematic search ensures optimal DNN-DRAM page matching
+- No complex constraint matching or tolerance calculations needed
