@@ -1,9 +1,9 @@
-# ROBIN: Rowhammer-oriented Backdoor Attack during Inference
+# ROBBIN: Rowhammer-based Backdoor Injection during Inference
 
 A comprehensive hardware-aware inference-time backdoor attack framework that exploits RowHammer vulnerabilities to inject backdoors into deployed Deep Neural Networks (DNNs) without modifying the model files.
 
 
-**This repository contains the code corresponding to paper #1977 under submission at DAC 2026.**
+**This repository contains the code corresponding to paper #333 under submission at ICCAD 2026.**
 
 
 
