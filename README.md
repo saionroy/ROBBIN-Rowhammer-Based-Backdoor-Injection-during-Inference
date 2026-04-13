@@ -10,7 +10,7 @@ A comprehensive hardware-aware inference-time backdoor attack framework that exp
 
 ## 📋 Overview
 
-This work presents ROBIN, a Rowhammer-based inference-time backdoor attack that accounts for hammering-induced bit flips. It uses deterministic vulnerability profiling to find stable, reproducible flip patterns at higher hammering intensities that overcome on-die error correction code (OECC). Utilizing this profiling, ROBIN iteratively selects the minimum number of DRAM pages to hammer, which improves the backdoor effect while accounting for all flips. Across three DDR4 chips, ROBIN attains close to 90% attack success rate (ASR) on triggered inputs while preserving >83% test accuracy (TA) on benign inputs, evaluated on ResNet-20 with CIFAR-10, for both FP32 and INT8 data types. ROBIN is the first practical backdoor attack that leverages device-specific vulnerabilities and achieves consistent attack efficacy across multiple DRAMs.
+This work presents ROBBIN, a Rowhammer-based inference-time backdoor attack that accounts for hammering-induced bit flips. It uses deterministic vulnerability profiling to find stable, reproducible flip patterns at higher hammering intensities that overcome on-die error correction code (OECC). Using this profiling, ROBBIN iteratively selects the minimum number of DRAM pages to hammer, thereby improving the backdoor effect while accounting for all flips. Across three DDR4 chips, ROBBIN attains a close to 90% attack success rate (ASR) on triggered inputs while preserving >83% test accuracy (TA) on benign inputs, evaluated on ResNet-20 with CIFAR-10, for both FP32 and INT8 data types. ROBBIN is the first practical backdoor attack that leverages device-specific vulnerabilities and achieves consistent attack efficacy across multiple DRAMs.
 
 ### Key Features
 - **Hardware-Aware Design**: Profiles actual DRAM vulnerability patterns instead of assuming arbitrary bit-flips
@@ -99,7 +99,7 @@ python create_bitflip_matrix.py --profile your_profile.json --output custom_bitf
 
 ## 📁 Repository Structure
 ```bash
-ROBIN-Rowhammer-aware-Backdoor-Attack/
+ROBBIN-Rowhammer-aware-Backdoor-Attack/
 ├── Core Attack Scripts
 │   ├── main_8bit_mvm.py                     # Main execution script for INT8 models
 │   ├── hardware_aware_backdoor_8bit_mvm.py  # Core MVM-based attack implementation
